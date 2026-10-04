@@ -68,6 +68,7 @@ unit: check-python
 
 build/vsim_%/Vraycast_system.h: $(RTL) $(MEM)
 	rm -rf build/vsim_$*
+	mkdir -p build/vsim_$*
 	$(VERILATOR) $(VFLAGS) -Mdir build/vsim_$* $(VPARAMS_$*) $(RTL)
 
 build/vsim_%/vsim: build/vsim_%/Vraycast_system.h sim/sim_main.cpp
