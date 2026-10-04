@@ -1,0 +1,12 @@
+# Yosys synthesis of the Urbana board top for the Spartan-7 XC7S50.
+# Run from the repository root:  make synth
+# Yosys maps to 7-series primitives (LUT6, CARRY4, RAMB36E1, DSP48E1, ...)
+# but does no placement, routing or timing sign-off.
+read_verilog -defer -sv -Irtl/mem rtl/debouncer.sv rtl/divider.sv rtl/pixel_pipeline.sv rtl/player.sv
+read_verilog -defer -sv -Irtl/mem rtl/ram_sdp.sv rtl/ray_engine.sv rtl/raycast_system.sv rtl/rom_1p.sv
+read_verilog -defer -sv -Irtl/mem rtl/rom_2p.sv rtl/tmds_encoder.sv rtl/video_sig_gen.sv
+read_verilog -defer -sv -Irtl/mem rtl/board/tmds_serializer.sv rtl/board/top_level.sv
+synth_xilinx -family xc7 -top top_level
+tee -q -o build/synth/stat.txt stat -tech xilinx
+tee -q -o build/synth/utilization.json stat -json
+tee -q -o build/synth/ltp.txt ltp -noff

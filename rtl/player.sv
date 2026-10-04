@@ -118,7 +118,7 @@ module player #(
   logic signed [16:0] neg_s;
   logic signed [32:0] plane_x_full, plane_y_full;
   always_comb begin
-    neg_s = -17'(dir_y_out);
+    neg_s = -(17'(dir_y_out));
     plane_x_full = 33'(neg_s) * 33'(PLANE_K);
     plane_y_full = 33'(dir_x_out) * 33'(PLANE_K);
   end

@@ -24,7 +24,7 @@ module tmds_encoder (
     logic [3:0] n;
     n = 4'd0;
     for (int i = 0; i < 8; i++) n = n + {3'b000, v[i]};
-    return n;
+    popcount8 = n;
   endfunction
 
   // ---- stage 1: transition-minimised q_m ---------------------------------
@@ -39,7 +39,7 @@ module tmds_encoder (
       q[i] = use_xnor ? ~(q[i-1] ^ d[i]) : (q[i-1] ^ d[i]);
     end
     q[8] = ~use_xnor;
-    return q;
+    transition_min = q;
   endfunction
 
   logic [8:0] q_m;
