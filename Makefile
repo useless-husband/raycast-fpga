@@ -40,7 +40,7 @@ VDEFS := -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM
 VFLAGS := --cc -O3 --x-assign fast --x-initial fast --noassert -Irtl -Irtl/mem \
           --top-module raycast_system
 
-.PHONY: all assets lint unit system test synth play play-small video bench venv check-python clean
+.PHONY: all assets lint unit system test synth play play-small video docs-media bench venv check-python clean
 
 all: test
 
@@ -105,9 +105,19 @@ video: build/vsim_720p/vsim
 	  -vf "fps=15,scale=480:-1:flags=area,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=bayer:bayer_scale=4" \
 	  build/media/walk.gif
 	$(FFMPEG) -loglevel error -y -f rawvideo -pix_fmt rgb24 -s 1280x720 -i build/media/walk.rgb \
-	  -vf "select=eq(n\,150)" -frames:v 1 build/media/frame.png
+	  -vf "select=eq(n\,160)" -frames:v 1 build/media/frame.png
 	rm build/media/walk.rgb
 	@ls -l build/media
+
+# committed README media (each must stay under 1 MB): a short GIF and one
+# exact frame of RTL output
+docs-media: video
+	$(FFMPEG) -loglevel error -y -ss 1 -t 9 -i build/media/walk.mp4 \
+	  -vf "fps=8,scale=384:-1:flags=area,split[a][b];[a]palettegen=max_colors=48:stats_mode=diff[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" \
+	  docs/media/walk.gif
+	cp build/media/frame.png docs/media/frame.png   # exact RTL pixels (lossless)
+	@for f in docs/media/walk.gif docs/media/frame.png; do \
+	  s=$$(wc -c < $$f); echo "$$f $$s bytes"; [ $$s -lt 1000000 ] || { echo "$$f is over 1 MB"; exit 1; }; done
 
 bench: build/vsim_720p/vsim build/vsim_small/vsim
 	./build/vsim_720p/vsim bench 30

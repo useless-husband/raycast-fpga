@@ -457,6 +457,11 @@ static int play_mode(int argc, char** argv, int scale) {
   Sim s(argc, argv);
   s.reset();
   bool quit = false;
+  // RAYCAST_PLAY_FRAMES=n: quit by itself after n frames (smoke tests)
+  const char* auto_env = getenv("RAYCAST_PLAY_FRAMES");
+  long auto_quit = auto_env ? atol(auto_env) : 0, shown = 0;
+  double t_start = now_s();
+  uint64_t c_start = 0;
   double t_last = now_s();
   uint64_t c_last = 0;
   int frames = 0;
@@ -482,6 +487,7 @@ static int play_mode(int argc, char** argv, int scale) {
     SDL_RenderClear(ren);
     SDL_RenderCopy(ren, tex, nullptr, nullptr);
     SDL_RenderPresent(ren);
+    if (auto_quit && ++shown >= auto_quit) quit = true;
     double t = now_s();
     if (t - t_last > 0.5) {
       double fps = frames / (t - t_last);
@@ -497,6 +503,9 @@ static int play_mode(int argc, char** argv, int scale) {
       frames = 0;
     }
   }
+  double dt = now_s() - t_start;
+  printf("play: %ld frames in %.1f s, %.2f fps, %.1f M cycles/s, tmds errors %llu\n", shown, dt,
+         shown / dt, (s.cycles - c_start) / dt / 1e6, (unsigned long long)s.tmds_errors);
   SDL_DestroyTexture(tex);
   SDL_DestroyRenderer(ren);
   SDL_DestroyWindow(win);
