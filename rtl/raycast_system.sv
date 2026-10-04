@@ -4,7 +4,7 @@
 // Portable top: everything except the board's clocking and serialisers.
 // One clock domain (the pixel clock), so there is no clock-domain crossing.
 //
-// Frame protocol (double-buffered column table):
+// Frame protocol (double-buffered column table, see frame_ctrl.sv):
 //
 //   nf pulse (end of the visible frame)
 //     if the engine has finished the back half: swap halves, then
@@ -104,50 +104,25 @@ module raycast_system #(
     );
   end
 
-  // ---- frame control -------------------------------------------------------
-  typedef enum logic [1:0] {
-    C_UPDATE,
-    C_PLAYER,
-    C_RENDER,
-    C_READY
-  } ctrl_t;
-  ctrl_t ctrl;
+  // ---- frame control (double buffering) --------------------------------------
   logic front;       // half of the column table being displayed
   logic valid;       // at least one complete table has been swapped in
-  logic player_done, engine_start, engine_done;
+  logic update, player_done, engine_start, engine_done;
   logic [15:0] drops;
 
-  always_ff @(posedge clk_in) begin
-    if (rst_in) begin
-      ctrl <= C_UPDATE;
-      front <= 1'b0;
-      valid <= 1'b0;
-      drops <= '0;
-      engine_start <= 1'b0;
-      dbg_swap_out <= 1'b0;
-    end else begin
-      engine_start <= 1'b0;
-      dbg_swap_out <= 1'b0;
-      case (ctrl)
-        C_UPDATE: ctrl <= C_PLAYER;
-        C_PLAYER: if (player_done) begin
-          engine_start <= 1'b1;
-          ctrl <= C_RENDER;
-        end
-        C_RENDER: begin
-          if (nf) drops <= drops + 1'b1;
-          else if (engine_done) ctrl <= C_READY;
-        end
-        C_READY: if (nf) begin
-          front <= ~front;
-          valid <= 1'b1;
-          dbg_swap_out <= 1'b1;
-          ctrl <= C_UPDATE;
-        end
-        default: ctrl <= C_UPDATE;
-      endcase
-    end
-  end
+  frame_ctrl ctrl (
+      .clk_in(clk_in),
+      .rst_in(rst_in),
+      .nf_in(nf),
+      .player_done_in(player_done),
+      .engine_done_in(engine_done),
+      .update_out(update),
+      .engine_start_out(engine_start),
+      .front_out(front),
+      .valid_out(valid),
+      .swap_out(dbg_swap_out),
+      .drops_out(drops)
+  );
 
   // ---- map ROM: port A for the ray engine, port B for the player -----------
   logic [9:0] engine_map_addr, player_map_addr;
@@ -175,7 +150,7 @@ module raycast_system #(
   ) player_fsm (
       .clk_in(clk_in),
       .rst_in(rst_in),
-      .update_in(ctrl == C_UPDATE),
+      .update_in(update),
       .btn_in(btn_clean),
       .load_in(dbg_load_in),
       .load_x_in(dbg_x_in),

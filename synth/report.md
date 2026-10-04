@@ -23,6 +23,7 @@ Per block (inside `raycast_system`):
 | map ROM (32 x 32 x 4 bit, dual port) | 1 | 143 | 8 | 0 | 0 |
 | video timing | 1 | 52 | 31 | 0 | 0 |
 | button debouncers | 6 | 48 | 132 | 0 | 0 |
+| frame_ctrl | 1 | 10 | 24 | 0 | 0 |
 
 The rest (MMCM, 4 x 2 OSERDESE2, OBUFDS, BUFG, I/O buffers, reset and LED logic) is the board wrapper `rtl/board/top_level.sv`.
 
