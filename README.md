@@ -86,13 +86,13 @@ cocotb 2.1.
 
 ```
 lint: verilator -Wall clean
-17 passed in 63.89s        # tests/model (6) + tests/unit (11 cocotb builds, 30 test cases)
-6 passed in 18.83s         # tests/system (Verilator)
+18 passed in 64.20s        # tests/model (7) + tests/unit (11 cocotb builds, 30 test cases)
+6 passed in 19.30s         # tests/system (Verilator)
 ```
 
 | Layer | What is compared | Volume |
 |---|---|---|
-| Model tests | worst-case DDA length, budget inequalities, player never inside a wall, ROM images reproducible | 6 tests |
+| Model tests | worst-case DDA length, budget inequalities, player never inside a wall, ROM images reproducible, map parsing | 7 tests |
 | TMDS encoder | every reachable disparity state x every byte, vs. a reference written from the DVI spec | 2,304 cases + 60,000 random cycles |
 | Ray engine (unit) | every column bit-exact vs. the model, plus the engine's cycle counter vs. a cycle model, on the real map and random maps | 328 frames at 3 resolutions |
 | Pixel pipeline (unit) | every pixel vs. the model, sync alignment every cycle | 11 frames |

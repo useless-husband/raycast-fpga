@@ -218,12 +218,12 @@ failure message.
 All of the following pass with `make test` (lint, then the model and unit
 tests, then the system tests), which takes about 90 seconds on an Apple M5.
 
-**Model tests** (6): column-word pack/unpack round trip (2,000 random words);
+**Model tests** (7): column-word pack/unpack round trip (2,000 random words);
 worst-case DDA length of 59 steps reached and never exceeded, and the budget
 inequalities; the player never enters a wall over 20,000 random button
 presses; axis-aligned views give an exactly zero ray component; the generator
-reproduces the committed ROM images byte for byte; maps with an open border
-are rejected.
+reproduces the committed ROM images byte for byte; a map saved with Windows
+line endings gives the same ROM; maps with an open border are rejected.
 
 **Unit tests** (cocotb, 11 builds, 30 test cases):
 
@@ -255,6 +255,11 @@ decoded and cross-checked with zero errors, the worst on-wire running
 disparity was 8, and no frame was dropped. `verilator --lint-only -Wall` is
 clean for the portable design and for the board top (against behavioural
 stand-ins of the four Xilinx primitives).
+
+Mutation spot checks: three deliberate one-line bugs (dropping the
+"balanced word" case of the TMDS rule, taking the texture row from the wrong
+product bits, letting DDA ties step x instead of y) each make the
+corresponding unit test fail, as does the original frame-controller bug.
 
 ### 4.3 Bugs the tests found
 

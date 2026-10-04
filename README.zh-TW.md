@@ -53,13 +53,13 @@ make bench       # 量模擬速度
 
 ```
 lint: verilator -Wall clean
-17 passed in 63.89s        # tests/model（6）+ tests/unit（11 個 cocotb 編譯、30 個測試案例）
-6 passed in 18.83s         # tests/system（Verilator）
+18 passed in 64.20s        # tests/model（7）+ tests/unit（11 個 cocotb 編譯、30 個測試案例）
+6 passed in 19.30s         # tests/system（Verilator）
 ```
 
 | 層級 | 比對什麼 | 數量 |
 |---|---|---|
-| 模型測試 | DDA 最壞步數、時脈預算不等式、玩家不會走進牆裡、ROM 映像可重現 | 6 個測試 |
+| 模型測試 | DDA 最壞步數、時脈預算不等式、玩家不會走進牆裡、ROM 映像可重現、地圖解析 | 7 個測試 |
 | TMDS 編碼器 | 每一種可能的 disparity 狀態 x 每一個位元組，對照依 DVI 規格獨立寫的參考實作 | 2,304 種組合 + 60,000 個隨機週期 |
 | 光線引擎（單元） | 每一行都和模型逐位元相同，引擎自己的週期計數器也和週期模型相同；真實地圖與隨機地圖 | 3 種解析度共 328 張 |
 | 像素管線（單元） | 每一個像素和模型相同，每個週期檢查同步訊號對齊 | 11 張 |
