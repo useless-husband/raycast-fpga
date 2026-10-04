@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Turn Yosys `stat -json` output into the Markdown resource report
-(synth/report.md).  Usage: synth_report.py build/synth/utilization.json"""
+(synth/report.md).  Usage: synth_report.py build/synth/utilization.json [--check]
+--check exits non-zero if the design does not fit the XC7S50."""
 
 import json
 import re
@@ -103,6 +104,10 @@ def main() -> None:
             "time them, and no open-source flow gives timing sign-off for this part. "
             "The design has not been run on a real board."]
     print("\n".join(out))
+    if "--check" in sys.argv:
+        over = [k for k in CAPACITY if total[k] > CAPACITY[k]]
+        if over:
+            sys.exit(f"does not fit the XC7S50: {over}")
 
 
 if __name__ == "__main__":

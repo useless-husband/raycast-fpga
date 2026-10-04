@@ -37,9 +37,9 @@ module tb_pixel_pipeline #(
   always_ff @(posedge clk_in) table_data <= table_mem[table_addr];
 
   pixel_pipeline #(.W(W), .H(H), .HW(7), .VW(6)) dut (
-      .clk_in, .rst_in, .hcount_in(hcount), .vcount_in(vcount), .ad_in(ad), .hs_in(hs),
-      .vs_in(vs), .front_in, .valid_in, .table_addr_out(table_addr), .table_data_in(table_data),
-      .rgb_out, .de_out, .hs_out, .vs_out
+      .clk_in(clk_in), .rst_in(rst_in), .hcount_in(hcount), .vcount_in(vcount), .ad_in(ad), .hs_in(hs),
+      .vs_in(vs), .front_in(front_in), .valid_in(valid_in), .table_addr_out(table_addr), .table_data_in(table_data),
+      .rgb_out(rgb_out), .de_out(de_out), .hs_out(hs_out), .vs_out(vs_out)
   );
 endmodule
 

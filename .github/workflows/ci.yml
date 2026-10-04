@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# Tools come from Ubuntu's own packages (verilator, iverilog, yosys).  The RTL
+# sticks to a SystemVerilog subset that Verilator 5.020, Icarus 12 and
+# Yosys 0.33 (Ubuntu 24.04) accept; the versions in use are printed below.
+
+jobs:
+  lint-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install HDL tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends verilator iverilog yosys
+      - name: Tool versions
+        run: |
+          verilator --version
+          iverilog -V 2>&1 | head -1
+          yosys -V
+      - run: python -m pip install -r requirements-dev.txt
+      - name: ROM images match the generator
+        run: make assets && git diff --exit-code rtl/mem
+      - name: Verilator lint (-Wall)
+        run: make lint
+      - name: Model tests and cocotb unit tests (Icarus)
+        run: make unit
+
+  system:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Verilator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends verilator
+          verilator --version
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Full-system tests (Verilator vs golden model, 320x180 and 1280x720)
+        run: make system
+      - name: Simulation speed on the runner
+        run: make bench
+
+  synth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Yosys
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends yosys
+          yosys -V
+      - name: synth_xilinx for the XC7S50 (fails if it does not fit)
+        run: make synth
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthesis-report
+          path: |
+            synth/report.md
+            build/synth/stat.txt

@@ -29,10 +29,10 @@ module tb_ray_engine #(
   always_ff @(posedge clk_in) map_data <= map_mem[map_addr];
 
   ray_engine #(.W(W), .H(H)) dut (
-      .clk_in, .rst_in, .start_in, .pos_x_in, .pos_y_in, .dir_x_in, .dir_y_in,
-      .plane_x_in, .plane_y_in,
+      .clk_in(clk_in), .rst_in(rst_in), .start_in(start_in), .pos_x_in(pos_x_in), .pos_y_in(pos_y_in), .dir_x_in(dir_x_in), .dir_y_in(dir_y_in),
+      .plane_x_in(plane_x_in), .plane_y_in(plane_y_in),
       .map_addr_out(map_addr), .map_data_in(map_data),
-      .col_we_out, .col_x_out, .col_data_out, .busy_out, .done_out, .cycles_out
+      .col_we_out(col_we_out), .col_x_out(col_x_out), .col_data_out(col_data_out), .busy_out(busy_out), .done_out(done_out), .cycles_out(cycles_out)
   );
 endmodule
 

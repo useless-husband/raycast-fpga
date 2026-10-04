@@ -85,7 +85,7 @@ test: lint unit system
 synth:
 	mkdir -p build/synth
 	$(YOSYS) -q -l build/synth/yosys.log synth/synth.ys
-	$(PYTHON) tools/synth_report.py build/synth/utilization.json > synth/report.md
+	python3 tools/synth_report.py build/synth/utilization.json --check > synth/report.md
 	@cat synth/report.md
 
 # ------------------------------------------------------------------ demo
