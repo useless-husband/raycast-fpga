@@ -123,6 +123,8 @@ def check(cfg: str, entries: list[Entry], name: str, tmp_path: Path) -> dict:
         assert rtl_p == exp_p, f"{tag} frame {k}: player state {rtl_p} != golden {exp_p}"
         assert written == vid.w, f"{tag} frame {k}: {written} columns written"
         view = m.view_of(ASSETS, exp_p)
+        assert cycles == m.frame_cycles(ASSETS, vid, view), \
+            f"{tag} frame {k}: engine took {cycles} cycles, model says {m.frame_cycles(ASSETS, vid, view)}"
         for x, word in enumerate(cols):
             exp, trace = m.cast_column(ASSETS, vid, view, x)
             if word != exp.pack():

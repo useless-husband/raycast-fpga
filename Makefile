@@ -64,7 +64,7 @@ check-python:
 	  echo "Run 'make venv' once (creates $(VENV)), or pass PYTHON=/path/to/python."; exit 1; }
 
 unit: check-python
-	$(PYTHON) -m pytest -q tests/unit
+	$(PYTHON) -m pytest -q tests/model tests/unit
 
 build/vsim_%/Vraycast_system.h: $(RTL) $(MEM)
 	rm -rf build/vsim_$*

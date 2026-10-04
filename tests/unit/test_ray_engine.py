@@ -107,6 +107,8 @@ class Bench:
                     f"{tag} {p} column {x}:\n  expected {exp}\n  got      {m.Column.unpack(got[x])}\n"
                     f"  model trace {tr}")
         cycles = int(d.cycles_out.value)
+        exp_cycles = m.frame_cycles(a, self.vid, v)
+        assert cycles == exp_cycles, f"{tag}: engine took {cycles} cycles, cycle model says {exp_cycles}"
         self.max_cycles = max(self.max_cycles, cycles)
         self.frames += 1
         self.columns += self.w

@@ -336,3 +336,21 @@ def render(a: Assets, vid: Video, table: list[Column]) -> bytearray:
             out[o + 1] = (rgb >> 8) & 0xFF
             out[o + 2] = rgb & 0xFF
     return out
+
+
+# ------------------------------------------------------------- cycle budget
+DIV_CYCLES = 34   # launch state + 32 restoring steps + the cycle that sees the result
+
+
+def column_cycles(tr: Trace) -> int:
+    """Clock cycles the RTL ray engine spends on one column (ray_engine.sv FSM):
+    CAMX, RAYDIR, two delta divisions (1 cycle each when the ray component is
+    0), SIDE, two cycles per DDA step, PERP, the line-height division (1 cycle
+    when the distance is 0), the texture-step division and WRITE."""
+    return (2 + (DIV_CYCLES if tr.rdx else 1) + (DIV_CYCLES if tr.rdy else 1) + 1
+            + 2 * tr.steps + 1 + (DIV_CYCLES if tr.perp else 1) + DIV_CYCLES + 1)
+
+
+def frame_cycles(a: Assets, vid: Video, v: View) -> int:
+    """Value of the engine's cycles_out counter for a whole frame."""
+    return sum(column_cycles(cast_column(a, vid, v, x)[1]) for x in range(vid.w))
