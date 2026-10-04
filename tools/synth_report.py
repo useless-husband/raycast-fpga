@@ -21,6 +21,7 @@ BLOCKS = {
     "tmds_encoder": "TMDS encoders",
     "video_sig_gen": "video timing",
     "debouncer": "button debouncers",
+    "frame_ctrl": "frame controller",
 }
 
 

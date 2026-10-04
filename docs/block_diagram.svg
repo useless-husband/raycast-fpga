@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 600" width="1120" height="600" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>raycast-fpga block diagram</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <style>
+      .t { font-size: 13px; font-weight: 600; fill: #1d2430; }
+      .s { font-size: 11px; fill: #3d4654; }
+      .l { font-size: 11px; fill: #333; }
+      .h { font-size: 12px; font-weight: 600; fill: #444; }
+      .w { stroke: #333; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+      .compute { fill: #E8EEF7; stroke: #3B5B8C; stroke-width: 1.4; }
+      .memory { fill: #FBF1DE; stroke: #A0742A; stroke-width: 1.4; }
+      .video { fill: #E6F2EA; stroke: #2F7A4B; stroke-width: 1.4; }
+      .board { fill: #F0F0F0; stroke: #777; stroke-width: 1.4; stroke-dasharray: 5 3; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1120" height="600" fill="#ffffff"/>
+
+  <!-- outer boxes -->
+  <rect x="10" y="10" width="1100" height="580" rx="8" fill="none" stroke="#777" stroke-dasharray="6 4"/>
+  <text x="22" y="30" class="h">top_level.sv: Urbana board wrapper (Xilinx primitives, synthesis only)</text>
+  <rect x="30" y="44" width="850" height="530" rx="8" fill="none" stroke="#555"/>
+  <text x="42" y="64" class="h">raycast_system.sv: portable core, one 74.25 MHz clock domain (simulated and tested)</text>
+
+  <!-- per-frame path -->
+  <rect x="50" y="90" width="140" height="58" rx="6" class="compute"/>
+  <text x="60" y="113" class="t">debouncer x6</text>
+  <text x="60" y="132" class="s">2-flop sync, 5 ms filter</text>
+
+  <rect x="230" y="90" width="170" height="58" rx="6" class="compute"/>
+  <text x="240" y="113" class="t">player.sv</text>
+  <text x="240" y="132" class="s">turn, move x, move y, collide</text>
+
+  <rect x="450" y="90" width="200" height="58" rx="6" class="compute"/>
+  <text x="460" y="113" class="t">ray_engine.sv</text>
+  <text x="460" y="132" class="s">camX, ray, DDA, perp, lh, step</text>
+
+  <rect x="690" y="90" width="175" height="58" rx="6" class="memory"/>
+  <text x="700" y="113" class="t">column table</text>
+  <text x="700" y="132" class="s">2 x 1280 x 70 bit (2 halves)</text>
+
+  <!-- helpers row -->
+  <rect x="50" y="200" width="140" height="58" rx="6" class="compute"/>
+  <text x="60" y="223" class="t">frame_ctrl.sv</text>
+  <text x="60" y="242" class="s">update, render, swap at nf</text>
+
+  <rect x="230" y="200" width="125" height="58" rx="6" class="memory"/>
+  <text x="240" y="223" class="t">sin/cos ROM</text>
+  <text x="240" y="242" class="s">1024 x Q1.14</text>
+
+  <rect x="375" y="200" width="150" height="58" rx="6" class="memory"/>
+  <text x="385" y="223" class="t">map ROM</text>
+  <text x="385" y="242" class="s">32 x 32 x 4 bit, 2 ports</text>
+
+  <rect x="545" y="200" width="125" height="58" rx="6" class="compute"/>
+  <text x="555" y="223" class="t">divider.sv</text>
+  <text x="555" y="242" class="s">radix-2, 4 per column</text>
+
+  <!-- per-pixel path -->
+  <rect x="50" y="400" width="150" height="58" rx="6" class="video"/>
+  <text x="60" y="423" class="t">video_sig_gen.sv</text>
+  <text x="60" y="442" class="s">1280x720@60, CEA-861</text>
+
+  <rect x="250" y="400" width="250" height="58" rx="6" class="video"/>
+  <text x="260" y="423" class="t">pixel_pipeline.sv</text>
+  <text x="260" y="442" class="s">5 stages: entry, tex y, texel, palette, shade</text>
+
+  <rect x="250" y="500" width="120" height="54" rx="6" class="memory"/>
+  <text x="260" y="522" class="t">texture ROM</text>
+  <text x="260" y="540" class="s">8 x 64x64 x 8 bit</text>
+
+  <rect x="380" y="500" width="120" height="54" rx="6" class="memory"/>
+  <text x="390" y="522" class="t">palette ROM</text>
+  <text x="390" y="540" class="s">256 x RGB888</text>
+
+  <rect x="560" y="400" width="170" height="58" rx="6" class="video"/>
+  <text x="570" y="423" class="t">tmds_encoder.sv x3</text>
+  <text x="570" y="442" class="s">8b/10b, DC balanced</text>
+
+  <!-- board-only blocks -->
+  <rect x="905" y="90" width="185" height="58" rx="6" class="board"/>
+  <text x="915" y="113" class="t">MMCME2_BASE</text>
+  <text x="915" y="132" class="s">100 to 74.25 / 371.25 MHz</text>
+
+  <rect x="905" y="400" width="185" height="58" rx="6" class="board"/>
+  <text x="915" y="423" class="t">tmds_serializer x4</text>
+  <text x="915" y="442" class="s">2 x OSERDESE2, 10:1 DDR</text>
+
+  <rect x="905" y="500" width="185" height="54" rx="6" class="board"/>
+  <text x="915" y="522" class="t">OBUFDS x4</text>
+  <text x="915" y="540" class="s">3 data lanes + clock lane</text>
+
+  <!-- wires: per frame -->
+  <text x="34" y="84" class="l">btn</text>
+  <path d="M 36 119 L 48 119" class="w"/>
+  <path d="M 190 119 L 228 119" class="w"/>
+  <path d="M 400 119 L 448 119" class="w"/>
+  <text x="404" y="111" class="l">pos, dir,</text>
+  <text x="404" y="140" class="l">plane</text>
+  <path d="M 650 119 L 688 119" class="w"/>
+  <text x="652" y="111" class="l">write</text>
+
+  <path d="M 290 148 L 290 198" class="w"/>
+  <path d="M 340 148 L 400 198" class="w"/>
+  <path d="M 500 148 L 470 198" class="w"/>
+  <path d="M 600 148 L 600 198" class="w"/>
+  <path d="M 625 198 L 625 150" class="w"/>
+
+  <!-- frame control -->
+  <path d="M 190 222 L 214 222 L 214 140 L 228 140" class="w"/>
+  <text x="196" y="186" class="l" transform="rotate(-90 205 186)">update</text>
+  <path d="M 120 200 L 120 172 L 545 172 L 545 150" class="w"/>
+  <text x="430" y="168" class="l">start</text>
+  <path d="M 120 172 L 777 172 L 777 150" class="w"/>
+  <text x="700" y="168" class="l">swap halves</text>
+  <path d="M 110 398 L 110 260" class="w"/>
+  <text x="116" y="340" class="l">nf (new frame)</text>
+
+  <!-- wires: per pixel -->
+  <path d="M 777 148 L 777 330 L 400 330 L 400 398" class="w"/>
+  <text x="560" y="324" class="l">read front half, 1 entry per pixel</text>
+  <path d="M 200 429 L 248 429" class="w"/>
+  <text x="203" y="421" class="l">h, v</text>
+  <path d="M 310 458 L 310 498" class="w"/>
+  <path d="M 440 458 L 440 498" class="w"/>
+  <path d="M 500 429 L 558 429" class="w"/>
+  <text x="504" y="421" class="l">RGB</text>
+  <path d="M 730 429 L 903 429" class="w"/>
+  <text x="742" y="421" class="l">3 x 10-bit symbols</text>
+  <path d="M 997 458 L 997 498" class="w"/>
+  <path d="M 1090 527 L 1104 527" class="w"/>
+  <text x="1040" y="578" class="l">HDMI</text>
+  <path d="M 997 148 L 997 280 L 886 280" class="w"/>
+  <text x="890" y="298" class="l">74.25 MHz pixel clock</text>
+
+  <!-- legend -->
+  <rect x="560" y="490" width="14" height="12" class="compute"/><text x="580" y="500" class="l">control / arithmetic</text>
+  <rect x="560" y="510" width="14" height="12" class="memory"/><text x="580" y="520" class="l">block RAM / ROM</text>
+  <rect x="560" y="530" width="14" height="12" class="video"/><text x="580" y="540" class="l">video path (every pixel)</text>
+  <rect x="720" y="490" width="14" height="12" class="board"/><text x="740" y="500" class="l">Xilinx primitive</text>
+</svg>

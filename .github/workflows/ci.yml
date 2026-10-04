@@ -9,8 +9,9 @@ permissions:
   contents: read
 
 # Tools come from Ubuntu's own packages (verilator, iverilog, yosys).  The RTL
-# sticks to a SystemVerilog subset that Verilator 5.020, Icarus 12 and
-# Yosys 0.33 (Ubuntu 24.04) accept; the versions in use are printed below.
+# keeps to a conservative SystemVerilog subset (no interfaces, packages,
+# structs or `return`); synthesis was also checked locally with Yosys 0.33,
+# the Ubuntu 24.04 version.  The versions in use are printed below.
 
 jobs:
   lint-and-unit:

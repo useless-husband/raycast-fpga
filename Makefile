@@ -40,7 +40,7 @@ VDEFS := -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM
 VFLAGS := --cc -O3 --x-assign fast --x-initial fast --noassert -Irtl -Irtl/mem \
           --top-module raycast_system
 
-.PHONY: all assets lint unit system test synth play play-small video docs-media bench venv check-python clean
+.PHONY: all assets lint unit system test synth play play-small check-sdl video docs-media bench venv check-python clean
 
 all: test
 
@@ -89,10 +89,13 @@ synth:
 	@cat synth/report.md
 
 # ------------------------------------------------------------------ demo
-play: build/vsim_720p/vsim
+check-sdl:
+	@command -v sdl2-config >/dev/null || { echo "SDL2 not found: brew install sdl2 (or apt install libsdl2-dev), then make clean"; exit 1; }
+
+play: check-sdl build/vsim_720p/vsim
 	./build/vsim_720p/vsim play 1
 
-play-small: build/vsim_small/vsim
+play-small: check-sdl build/vsim_small/vsim
 	./build/vsim_small/vsim play 4
 
 # 720p walk rendered by the RTL -> MP4 (build/media) and a small GIF for the README
