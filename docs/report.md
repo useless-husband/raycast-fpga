@@ -290,8 +290,8 @@ The ray engine is the largest block (938 LUTs, 651 flip-flops, 9 DSPs),
 followed by the player (390 LUTs) and the pixel pipeline (294 LUTs, 8 DSPs,
 7.5 block RAMs of texture). The 1024 x 4-bit map ROM is built from LUTs
 (143). For comparison, the MazeCaster 6.205 project reports 2,271 LUTs and 21
-DSPs with all 2.7 Mbit of block RAM used, most of it by two quarter-resolution
-frame buffers.
+DSPs with all 2.7 Mbit of block RAM used (frame buffers at a reduced
+resolution, FIFOs, textures and maps).
 
 There is no timing result. Yosys maps to 7-series cells but does not place,
 route or analyse timing, and the open-source 7-series place-and-route flows do

@@ -402,7 +402,13 @@ static int record_mode(int argc, char** argv, const char* script, const char* ou
   FILE* f = strcmp(out, "-") == 0 ? stdout : fopen(out, "wb");
   int last_started = 0, last_shown = -1, written = 0;
   double t0 = now_s();
+  uint64_t limit = (uint64_t)(masks.size() + 4) * 3000000ULL;
   while (last_shown < (int)masks.size() - 1) {
+    if (s.cycles > limit) {
+      fprintf(stderr, "record: timeout after %d frames\n", written);
+      if (f != stdout) fclose(f);
+      return 1;
+    }
     bool fr = s.tick();
     if (s.engine_started != last_started) {
       last_started = s.engine_started;

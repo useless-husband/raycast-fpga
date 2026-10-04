@@ -25,6 +25,11 @@
 // Column table entry, MSB first (70 bits):
 //   draw_start[10] draw_end[10] tex_id[3] tex_x[6] shade[3] lh_half[15] step[23]
 //
+// Preconditions: dir has unit length and plane is perpendicular to it (as
+// player.sv produces them from the sine table); the register widths rely on
+// it (overflow argument in docs/DESIGN.md section 4).  H <= 1023 because
+// draw_start/draw_end are 10 bits.
+//
 // Golden reference: model/raycast_model.py: cast_column().
 module ray_engine #(
     parameter int W = 1280,
@@ -146,7 +151,7 @@ module ray_engine #(
     abs_rdx = rdx[17] ? 17'(-rdx) : 17'(rdx);
     abs_rdy = rdy[17] ? 17'(-rdy) : 17'(rdy);
 
-    // rd < 0: distance back to the hit_cell's left/top edge = frac
+    // rd < 0: distance back to the cell's left/top edge = frac
     // rd > 0: distance forward to the right/bottom edge = 1 - frac
     frac_x_dist = rdx[17] ? {1'b0, px[13:0]} : 15'd16384 - {1'b0, px[13:0]};
     frac_y_dist = rdy[17] ? {1'b0, py[13:0]} : 15'd16384 - {1'b0, py[13:0]};
@@ -177,7 +182,7 @@ module ray_engine #(
   logic unused;
   assign unused = ^{div_r, div_err, div_busy, wall_prod[13:0], wall_frac[7:0]};
 
-  // the map ROM sees the address of the hit_cell we are about to step into
+  // the map ROM sees the address of the cell we are about to step into
   always_comb begin
     if (state == DDA) begin
       map_addr_out = step_on_x ? {map_y[4:0], next_map_x[4:0]} : {next_map_y[4:0], map_x[4:0]};
@@ -314,7 +319,7 @@ module ray_engine #(
           state <= DDA;
         end
 
-        // one grid step; the ROM is reading the new hit_cell during this cycle
+        // one grid step; the ROM is reading the new cell during this cycle
         DDA: begin
           if (step_on_x) begin
             side_x <= side_x + {1'b0, delta_x};

@@ -91,6 +91,15 @@ def test_generated_assets_match_committed(tmp_path):
         assert filecmp.cmp(tmp_path / name, REPO / "rtl" / "mem" / name, shallow=False), name
 
 
+def test_map_with_windows_line_endings(tmp_path):
+    """A map saved by a Windows editor (CRLF) must give identical ROM images."""
+    crlf = tmp_path / "level_crlf.txt"
+    crlf.write_bytes((REPO / "maps" / "level1.txt").read_bytes().replace(b"\n", b"\r\n"))
+    subprocess.run([sys.executable, str(REPO / "tools" / "gen_assets.py"), "--map", str(crlf),
+                    "--out", str(tmp_path)], check=True, stdout=subprocess.DEVNULL)
+    assert filecmp.cmp(tmp_path / "map.hex", REPO / "rtl" / "mem" / "map.hex", shallow=False)
+
+
 def test_map_loader_rejects_open_border(tmp_path):
     rows = (REPO / "maps" / "level1.txt").read_text().splitlines()
     rows = [r for r in rows if not r.startswith("#")]

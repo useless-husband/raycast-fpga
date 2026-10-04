@@ -37,7 +37,10 @@ back into pixels; nothing is drawn by software. Full-resolution frame:
   wall sliding.
 * **Assets**: the map is a text file (`maps/level1.txt`); eight 64x64
   textures are generated procedurally by `tools/gen_assets.py` (no game
-  assets).
+  assets). The arrow sign is asymmetric on purpose, so a mirrored wall face
+  would be obvious.
+
+  ![The eight procedural textures](docs/media/textures.png)
 * **Golden model** (`model/raycast_model.py`): integer Python that computes
   the same values as the hardware, in the same widths, with the same rounding.
 * **Tests**: model property tests, cocotb unit tests on Icarus for every
@@ -177,8 +180,8 @@ idea. Projects it was compared with:
 
 * **MazeCaster** (T. Hagenlocker, C. Hu, H. Hussein, MIT 6.205, Fall 2024):
   raycasting on the same Urbana board with parallel DDA units, 8.8 fixed
-  point and two frame buffers at a quarter of 720p with 8-bit colour, which
-  used the board's entire 2.7 Mbit of block RAM. This project's main
+  point and two 8-bit frame buffers at one fourth of 720p's dimensions; its
+  report says the design used all 2.7 Mbit of the board's block RAM. This project's main
   difference is the per-column table instead of frame buffers, which allows
   full 720p with 24-bit colour in 17% of the block RAM, plus the bit-exact
   model-based test suite.

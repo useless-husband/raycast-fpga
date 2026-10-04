@@ -17,7 +17,7 @@ image is far bigger than that:
 |---|---:|---:|
 | One 720p frame, 24-bit colour | 22,118,400 | 800% |
 | One 720p frame, 8-bit palette | 7,372,800 | 267% |
-| Two 320x180 frames, 8-bit (what MazeCaster did) | 921,600 | 33% |
+| Two 320x180 frames, 8-bit | 921,600 | 33% |
 | **Two column tables, 1280 x 70 bit (this design)** | **179,200** | **6.5%** |
 
 A raycaster does not need a framebuffer, because everything on screen column
@@ -34,10 +34,15 @@ frame; the halves swap at the end of the visible part of a frame (`nf`, the
 image.
 
 Total on-chip memory used: column table 179,200 + textures 262,144 + sine/cosine
-16,384 + palette 6,144 + map 4,096 = 467,968 bits. After synthesis Yosys uses
-13 of the 75 block-RAM sites (17%), mostly because the 70-bit table words and
-the 32K-deep texture ROM do not pack perfectly; the palette and the map end up
-in LUTs.
+16,384 + palette 6,144 + map 4,096 = 467,968 bits, 17% of the chip. After
+synthesis this occupies 13 of the 75 block-RAM sites (also 17%: the table and
+the textures pack almost perfectly); the small palette and map ROMs end up in
+LUTs.
+
+For comparison, the MazeCaster 6.205 project (see Related Work in the README)
+rendered at one fourth of 720p's dimensions with two 8-bit frame buffers and
+reports using all 2.7 Mbit of block RAM for frame buffers, FIFOs, textures and
+maps.
 
 ## 2. One clock
 

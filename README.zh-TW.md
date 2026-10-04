@@ -16,7 +16,9 @@
 * **不用畫面緩衝區**：引擎每一行只寫 70 個位元到一張「行資料表」（雙緩衝，2 x 1280 筆，只佔晶片區塊記憶體的 6.5%）；五級像素管線在掃描畫面的同時，用這張表加上貼圖 ROM 即時算出每一個像素。
 * **HDMI**：CEA-861 的 720p 時序產生器、照 DVI 1.0 規格做 DC 平衡的 TMDS 編碼器，板子上再用 OSERDESE2 做 10:1 序列化、用 MMCM 產生時脈。
 * **玩家**：前進、後退、平移、轉向（按鍵有去彈跳），撞牆會沿著牆滑過去。
-* **素材**：地圖是一個文字檔（`maps/level1.txt`）；八張 64x64 貼圖由 `tools/gen_assets.py` 用程式產生，沒有用任何遊戲素材。
+* **素材**：地圖是一個文字檔（`maps/level1.txt`）；八張 64x64 貼圖由 `tools/gen_assets.py` 用程式產生，沒有用任何遊戲素材。箭頭招牌故意做成左右不對稱，牆面如果左右顛倒一眼就看得出來。
+
+  ![程式產生的八張貼圖](docs/media/textures.png)
 * **黃金模型**（`model/raycast_model.py`）：用整數 Python 算出和硬體完全一樣的數值，位元寬度、捨入方式都一樣。
 * **測試**：模型性質測試、每個模組的 cocotb 單元測試（Icarus）、320x180 與 1280x720 的 Verilator 全系統測試、`verilator -Wall` lint、Yosys 對 XC7S50 合成、GitHub Actions CI。
 * **互動展示**：真正的 RTL 在視窗裡跑，用鍵盤操作。
@@ -110,7 +112,7 @@ lint: verilator -Wall clean
 
 光線投射是很常見的 FPGA 專題，本專案不宣稱是新點子。比較過的作品：
 
-* **MazeCaster**（T. Hagenlocker、C. Hu、H. Hussein，MIT 6.205，2024 秋）：同一塊 Urbana 板子，平行的 DDA 單元、8.8 定點數，以及兩個四分之一 720p、8 位元色彩的畫面緩衝區，用光了整顆晶片 2.7 Mbit 的區塊記憶體。本專案主要的不同是用行資料表取代畫面緩衝區，因此能用 17% 的區塊記憶體輸出完整 720p、24 位元色彩，另外加上以模型為基準的逐位元測試。
+* **MazeCaster**（T. Hagenlocker、C. Hu、H. Hussein，MIT 6.205，2024 秋）：同一塊 Urbana 板子，平行的 DDA 單元、8.8 定點數，以及兩個 8 位元色彩、解析度比 720p 低的畫面緩衝區（原文：one-fourth the dimensions）；它的報告說用光了板子上 2.7 Mbit 的區塊記憶體。本專案主要的不同是用行資料表取代畫面緩衝區，因此能用 17% 的區塊記憶體輸出完整 720p、24 位元色彩，另外加上以模型為基準的逐位元測試。
 * 6.205 的[期末專題清單](https://fpga.mit.edu/6205/F25/final_project_archive)還有其他繪圖專題，例如 "Voxel Ray Tracer"（2024）、"Poor Man's VR: Raymarching with Stereoscopic Offset and Gyroscopic Control"（2023）、"FPGA Fractal Ray Marcher" 與 "REND3R"（2022）、"FPGA Ray Tracer"（2019）。
 * [dormando/verilog-raycaster](https://github.com/dormando/verilog-raycaster)：用 Verilog 寫的光線投射，接 320x240 SPI 液晶，畫上一行的同時投射下一條光線。
 * [mayawarrier/raycast-3D-CycloneFPGA](https://github.com/mayawarrier/raycast-3D-CycloneFPGA)：Cyclone V 上的德軍總部式光線投射，每格畫 160 條。

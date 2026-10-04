@@ -31,7 +31,7 @@ def parse_map(path: str) -> tuple[list[int], tuple[int, int, int]]:
     rows = []
     with open(path, encoding="utf-8") as f:
         for line in f:
-            line = line.rstrip("\n")
+            line = line.rstrip("\r\n")
             if line.startswith("#") or not line.strip():
                 continue
             rows.append(line)
