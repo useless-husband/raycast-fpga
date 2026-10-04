@@ -129,7 +129,7 @@ module ray_engine #(
   logic [5:0] next_map_x, next_map_y;
   logic step_on_x;
   logic [15:0] span;
-  logic [17:0] rd_wall;
+  logic signed [17:0] rd_wall;
   logic [13:0] pos_wall;
   logic [27:0] wall_prod;
   logic [13:0] wall_frac;

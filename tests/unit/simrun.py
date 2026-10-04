@@ -24,12 +24,12 @@ sys.path.insert(0, str(REPO / "tests" / "ref"))
 
 
 def run(toplevel: str, sources: list[str], test_module: str, parameters: dict | None = None,
-        name: str | None = None, testcase: str | None = None) -> None:
+        name: str | None = None, testcase: str | list | None = None, env: dict | None = None) -> None:
     sim = os.environ.get("SIM", "icarus")
     build_dir = REPO / "build" / "cocotb" / (name or toplevel)
     runner = get_runner(sim)
     runner.build(
-        sources=[RTL / s for s in sources],
+        sources=[(REPO / s) if "/" in s else (RTL / s) for s in sources],
         hdl_toplevel=toplevel,
         build_dir=build_dir,
         includes=[RTL / "mem"],
@@ -45,5 +45,5 @@ def run(toplevel: str, sources: list[str], test_module: str, parameters: dict | 
         results_xml=str(build_dir / "results.xml"),
         testcase=testcase,
         parameters=parameters or {},
-        extra_env={"PYTHONPATH": os.pathsep.join(sys.path)},
+        extra_env={"PYTHONPATH": os.pathsep.join(sys.path), **(env or {})},
     )
